@@ -11,8 +11,8 @@ jobs:
   - stage: build-windows
     os: windows
     before_install:
+    - choco uninstall -y mingw
     - choco upgrade --no-progress -y python
-    - choco upgrade --no-progress -y pip
     - "cmd //C RefreshEnv.cmd"
     - python -m pip install pyinstaller
     script:

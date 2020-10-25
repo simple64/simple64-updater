@@ -12,6 +12,7 @@ jobs:
     os: windows
     before_install:
     - choco upgrade --no-progress -y python
+    - choco upgrade --no-progress -y pip
     - "cmd //C RefreshEnv.cmd"
     - python -m pip install pyinstaller
     script:

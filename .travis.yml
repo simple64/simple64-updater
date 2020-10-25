@@ -14,8 +14,8 @@ jobs:
     before_install:
     - choco uninstall -y mingw
     - choco install python --version=3.7.9
-    - python -m pip install --upgrade setuptools
     - python -m pip install --upgrade pip
+    - python -m pip install --upgrade setuptools
     - python -m pip install pyinstaller
     - python -m pip install awscli
     script:

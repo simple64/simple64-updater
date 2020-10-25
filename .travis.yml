@@ -1,0 +1,17 @@
+language: shell
+jobs:
+  include:
+  - stage: build-linux
+    dist: bionic
+    before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get -y install awscli
+    script:
+    - aws s3 cp m64p-updater.py s3://m64p/updater/ --quiet --acl public-read
+  - stage: build-windows
+    os: windows
+    before_install:
+    - choco upgrade --no-progress -y python
+    - pip install pyinstaller
+    script:
+    - pyinstaller m64p-updater.py

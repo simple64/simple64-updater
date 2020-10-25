@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import subprocess
 import requests
 import tempfile
 import sys
@@ -31,8 +32,12 @@ tempdir = tempfile.mkdtemp()
 filename = os.path.join(tempdir, 'm64p.zip')
 open(filename, 'wb').write(resp.content)
 
-with zipfile.ZipFile(filename, 'r') as zip_ref:
-    zip_ref.extractall(tempdir)
+with zipfile.ZipFile(filename, 'r') as zf:
+    for info in zf.infolist():
+        zf.extract( info.filename, path=tempdir )
+        out_path = os.path.join( tempdir, info.filename )
+        perm = (info.external_attr >> 16)
+        os.chmod( out_path, perm )
 
 extract_path = os.path.join(tempdir, 'mupen64plus')
 files = os.listdir(extract_path)
@@ -40,4 +45,7 @@ for f in files:
     shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
 shutil.rmtree(tempdir)
+
+subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')])
+
 sys.exit(0)

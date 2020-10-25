@@ -14,6 +14,8 @@ jobs:
     before_install:
     - choco uninstall -y mingw
     - choco upgrade --no-progress -y python
+    - python -m pip install --upgrade requests
+    - python -m pip install --upgrade setuptools
     - python -m pip install --upgrade pip
     - python -m pip install pyinstaller
     - python -m pip install awscli

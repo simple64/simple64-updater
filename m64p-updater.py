@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import subprocess
+import time
 import requests
 import tempfile
 import sys
@@ -11,6 +12,8 @@ import shutil
 if len(sys.argv) < 2:
     print("no argument!")
     sys.exit(1)
+
+time.sleep(3)
 
 resp = requests.get('https://api.github.com/repos/loganmc10/m64p/releases/latest')
 if resp.status_code != 200:

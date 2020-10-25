@@ -37,7 +37,7 @@ with zipfile.ZipFile(filename, 'r') as zip_ref:
 extract_path = os.path.join(tempdir, 'mupen64plus')
 files = os.listdir(extract_path)
 for f in files:
-    shutil.move(os.path.join(extract_path, f), sys.argv[1])
+    shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
 shutil.rmtree(tempdir)
 sys.exit(0)

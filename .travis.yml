@@ -20,5 +20,5 @@ jobs:
     - python -m pip install pyinstaller
     - python -m pip install awscli
     script:
-    - pyinstaller -F m64p-updater.py
+    - pyinstaller -w -F m64p-updater.py
     - aws s3 cp dist/m64p-updater.exe s3://m64p/updater/ --quiet --acl public-read

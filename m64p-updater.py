@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import threading
 import subprocess
 import requests
 import tempfile
@@ -23,7 +24,6 @@ w.pack(fill="none", expand=True)
 
 def update_m64p():
     var.set("Determining latest release")
-    root.update_idletasks()
     resp = requests.get('https://api.github.com/repos/loganmc10/m64p/releases/latest')
     if resp.status_code != 200:
         raise ApiError('GET /tasks/ {}'.format(resp.status_code))
@@ -38,14 +38,12 @@ def update_m64p():
             m64p_url = item['browser_download_url']
 
     var.set("Downloading latest release")
-    root.update_idletasks()
     resp = requests.get(m64p_url, allow_redirects=True)
     tempdir = tempfile.mkdtemp()
     filename = os.path.join(tempdir, 'm64p.zip')
     open(filename, 'wb').write(resp.content)
 
     var.set("Extracting release")
-    root.update_idletasks()
     with zipfile.ZipFile(filename, 'r') as zf:
         for info in zf.infolist():
             zf.extract( info.filename, path=tempdir )
@@ -59,11 +57,14 @@ def update_m64p():
         shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
     var.set("Cleaning up")
-    root.update_idletasks()
     shutil.rmtree(tempdir)
 
     subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')])
-    root.destroy()
+    root.quit()
 
-root.after(3000, update_m64p)
+def start_thread():
+    x = threading.Thread(target=update_m64p)
+    x.start()
+
+root.after(3000, start_thread)
 root.mainloop()

@@ -7,7 +7,7 @@ jobs:
     - sudo apt-get -qq update
     - sudo apt-get -y install awscli
     script:
-    - aws s3 cp m64p-updater.py s3://m64p/updater/ --quiet --acl public-read
+    - aws s3 cp m64p-updater.py s3://m64p/updater/ --quiet
   - stage: build-windows
     os: windows
     env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
@@ -21,4 +21,4 @@ jobs:
     - python -m pip install awscli
     script:
     - pyinstaller -w -F m64p-updater.py
-    - aws s3 cp dist/m64p-updater.exe s3://m64p/updater/ --quiet --acl public-read
+    - aws s3 cp dist/m64p-updater.exe s3://m64p/updater/ --quiet

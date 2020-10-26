@@ -68,4 +68,4 @@ def start_thread():
 root.after(3000, start_thread)
 root.mainloop()
 
-subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')])
+subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')], start_new_session=True)

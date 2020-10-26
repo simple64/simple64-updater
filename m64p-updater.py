@@ -32,9 +32,9 @@ def update_m64p():
     if resp.status_code != 200:
        raise ApiError('GET /tasks/ {}'.format(resp.status_code))
     for item in resp.json():
-        if sys.platform.startswith('win') and 'win' in item['browser_download_url']:
+        if sys.platform.startswith('win') and 'm64p-win64' in item['browser_download_url']:
             m64p_url = item['browser_download_url']
-        elif sys.platform.startswith('lin') and 'lin' in item['browser_download_url']:
+        elif sys.platform.startswith('lin') and 'm64p-linux64' in item['browser_download_url']:
             m64p_url = item['browser_download_url']
 
     var.set("Downloading latest release")

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import threading
+import subprocess
 import requests
 import tempfile
 import sys
@@ -58,6 +59,7 @@ def update_m64p():
     var.set("Cleaning up")
     shutil.rmtree(tempdir)
 
+    subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')])
     root.quit()
 
 def start_thread():

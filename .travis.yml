@@ -5,7 +5,8 @@ jobs:
     dist: bionic
     before_install:
     - sudo apt-get -qq update
-    - sudo apt-get -y install awscli
+    - sudo apt-get -y dist-upgrade
+    - sudo apt-get -y install awscli python3-pip
     - pip3 install pyinstaller
     script:
     - pyinstaller -F m64p-updater.py

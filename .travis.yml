@@ -3,6 +3,7 @@ jobs:
   - stage: build-linux
     dist: bionic
     language: python
+    python: "3.7"
     install:
     - pip install --upgrade pip
     - pip install pyinstaller

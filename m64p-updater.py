@@ -56,9 +56,7 @@ def update_m64p():
     for f in files:
         shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
-    var.set("Cleaning up")
-    shutil.rmtree(tempdir)
-
+    var.set("Finished")
     subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')])
     root.quit()
 

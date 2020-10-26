@@ -42,7 +42,8 @@ def update_m64p():
 
     with tempfile.TemporaryDirectory() as tempdir:
         filename = os.path.join(tempdir, 'm64p.zip')
-        open(filename, 'wb').write(resp.content)
+        with open(filename, 'wb') as localfile:
+            localfile.write(resp.content)
 
         var.set("Extracting release")
         with zipfile.ZipFile(filename, 'r') as zf:

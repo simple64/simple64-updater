@@ -57,6 +57,8 @@ def update_m64p():
         shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
     var.set("Cleaning up")
+    shutil.rmtree(tempdir)
+
     root.quit()
 
 def start_thread():

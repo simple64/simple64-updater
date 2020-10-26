@@ -39,25 +39,25 @@ def update_m64p():
 
     var.set("Downloading latest release")
     resp = requests.get(m64p_url, allow_redirects=True)
-    tempdir = tempfile.mkdtemp()
-    filename = os.path.join(tempdir, 'm64p.zip')
-    open(filename, 'wb').write(resp.content)
 
-    var.set("Extracting release")
-    with zipfile.ZipFile(filename, 'r') as zf:
-        for info in zf.infolist():
-            zf.extract( info.filename, path=tempdir )
-            out_path = os.path.join( tempdir, info.filename )
-            perm = (info.external_attr >> 16)
-            os.chmod( out_path, perm )
+    with tempfile.TemporaryDirectory() as tempdir:
+        filename = os.path.join(tempdir, 'm64p.zip')
+        open(filename, 'wb').write(resp.content)
 
-    extract_path = os.path.join(tempdir, 'mupen64plus')
-    files = os.listdir(extract_path)
-    for f in files:
-        shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
+        var.set("Extracting release")
+        with zipfile.ZipFile(filename, 'r') as zf:
+            for info in zf.infolist():
+                zf.extract( info.filename, path=tempdir )
+                out_path = os.path.join( tempdir, info.filename )
+                perm = (info.external_attr >> 16)
+                os.chmod( out_path, perm )
+
+        extract_path = os.path.join(tempdir, 'mupen64plus')
+        files = os.listdir(extract_path)
+        for f in files:
+            shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
 
     var.set("Cleaning up")
-    shutil.rmtree(tempdir)
 
     root.quit()
 

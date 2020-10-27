@@ -14,6 +14,8 @@ if len(sys.argv) < 2:
     print("no argument!")
     sys.exit(1)
 
+my_env = os.environ.copy()
+
 root = tk.Tk()
 root.geometry("400x200")
 root.title("m64p-updater")
@@ -65,4 +67,4 @@ def start_thread():
 root.after(3000, start_thread)
 root.mainloop()
 
-subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')], start_new_session=True, close_fds=True)
+subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')], env=my_env, start_new_session=True, close_fds=True)

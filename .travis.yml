@@ -32,5 +32,6 @@ jobs:
     - cd ..
     - python setup.py install
     script:
+    - cd $TRAVIS_BUILD_DIR
     - pyinstaller -w -F m64p-updater.py
     - aws s3 cp dist/m64p-updater.exe s3://m64p/updater/ --quiet

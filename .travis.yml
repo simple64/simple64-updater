@@ -26,8 +26,8 @@ jobs:
     - python -m pip install --upgrade requests
     - python -m pip install --upgrade awscli
     - wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.0/PyInstaller-4.0.tar.gz
-    - tar xf PyInstaller-4.0.tar.gz
-    - cd pyinstaller-4.0/bootloader
+    - tar xf PyInstaller-4.0.tar.gz --directory /c/tmp
+    - cd /c/tmp/pyinstaller-4.0/bootloader
     - python ./waf all
     - cd ..
     - python setup.py install

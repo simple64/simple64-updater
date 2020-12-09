@@ -37,11 +37,11 @@ jobs:
           msys2 -c 'python -m pip install --upgrade requests'
           msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.0/PyInstaller-4.0.tar.gz'
           msys2 -c 'tar xf PyInstaller-4.0.tar.gz --directory /d'
-          cd /pyinstaller-4.0/bootloader
+          pushd /pyinstaller-4.0/bootloader
           msys2 -c 'python ./waf all'
           cd ..
           msys2 -c 'python setup.py install'
-          cd $GITHUB_WORKSPACE
+          popd
           msys2 -c 'pyinstaller -w -F m64p-updater.py'
       - name: Upload package
         uses: actions/upload-artifact@v2

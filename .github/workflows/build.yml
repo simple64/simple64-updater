@@ -15,7 +15,7 @@ jobs:
           pip3 install --upgrade pyinstaller
       - name: Run build script
         run: |
-          python3 -m pyinstaller -F m64p-updater.py
+          /usr/local/python3/bin/pyinstaller -F m64p-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:
@@ -37,7 +37,7 @@ jobs:
           msys2 -c 'python -m pip install --upgrade requests'
           msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.0/PyInstaller-4.0.tar.gz'
           msys2 -c 'tar xf PyInstaller-4.0.tar.gz --directory /d'
-          cd /d/pyinstaller-4.0/bootloader
+          cd /pyinstaller-4.0/bootloader
           msys2 -c 'python ./waf all'
           cd ..
           msys2 -c ' python setup.py install'

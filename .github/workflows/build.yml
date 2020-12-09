@@ -9,10 +9,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Update and install packages
         run: |
-          pip install --upgrade pip
-          pip install --upgrade setuptools
-          pip install --upgrade requests
-          pip install --upgrade pyinstaller
+          pip3 install --upgrade pip
+          pip3 install --upgrade setuptools
+          pip3 install --upgrade requests
+          pip3 install --upgrade pyinstaller
       - name: Run build script
         run: |
           pyinstaller -F m64p-updater.py
@@ -29,14 +29,18 @@ jobs:
         with:
           update: true
           install: >-
-            make
-            mingw-w64-x86_64-qt5
+            mingw-w64-x86_64-python
       - name: Run build script
         run: |
-          mkdir build
-          cd build
-          msys2 -c 'qmake ..'
-          msys2 -c 'make'
+          msys2 -c 'python -m pip install --upgrade pip'
+          msys2 -c 'python -m pip install --upgrade setuptools'
+          msys2 -c 'python -m pip install --upgrade requests'
+          msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.0/PyInstaller-4.0.tar.gz'
+          msys2 -c 'tar xf PyInstaller-4.0.tar.gz --directory /c'
+          cd /c/pyinstaller-4.0/bootloader
+          msys2 -c 'python ./waf all'
+          cd ..
+          msys2 -c ' python setup.py install'
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

@@ -41,7 +41,7 @@ jobs:
           msys2 -c 'python ./waf all'
           cd ..
           msys2 -c 'python setup.py install'
-          msys2 -c 'cd $GITHUB_WORKSPACE'
+          cd $GITHUB_WORKSPACE
           msys2 -c 'pyinstaller -w -F m64p-updater.py'
       - name: Upload package
         uses: actions/upload-artifact@v2

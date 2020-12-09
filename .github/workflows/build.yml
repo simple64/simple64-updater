@@ -1,0 +1,44 @@
+name: Build project
+
+on: push
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update and install packages
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade setuptools
+          pip install --upgrade requests
+          pip install --upgrade pyinstaller
+      - name: Run build script
+        run: |
+          pyinstaller -F m64p-updater.py
+      - name: Upload package
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-package
+          path: dist/m64p-updater
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            make
+            mingw-w64-x86_64-qt5
+      - name: Run build script
+        run: |
+          mkdir build
+          cd build
+          msys2 -c 'qmake ..'
+          msys2 -c 'make'
+      - name: Upload package
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-package
+          path: dist/m64p-updater.exe

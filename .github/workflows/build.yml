@@ -15,7 +15,7 @@ jobs:
           pip3 install --upgrade pyinstaller
       - name: Run build script
         run: |
-          /usr/local/python3/bin/pyinstaller -F m64p-updater.py
+          python3 -m PyInstaller -F m64p-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

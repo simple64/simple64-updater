@@ -10,6 +10,7 @@ jobs:
       - name: Update and install packages
         run: |
           pip3 install --upgrade pip
+          pip3 install --upgrade certifi
           pip3 install --upgrade setuptools
           pip3 install --upgrade requests
           pip3 install --upgrade pyinstaller

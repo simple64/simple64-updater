@@ -33,6 +33,7 @@ jobs:
       - name: Run build script
         run: |
           msys2 -c 'python -m pip install --upgrade pip'
+          msys2 -c 'python -m pip install --upgrade certifi'
           msys2 -c 'python -m pip install --upgrade setuptools'
           msys2 -c 'python -m pip install --upgrade requests'
           msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.1/pyinstaller-4.1.tar.gz'

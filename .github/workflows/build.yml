@@ -26,25 +26,24 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
         with:
-          update: true
-          install: >-
-            mingw-w64-x86_64-python3-pip
+          python-version: '3.8'
       - name: Run build script
         run: |
-          msys2 -c 'python -m pip install --upgrade pip'
-          msys2 -c 'python -m pip install --upgrade certifi'
-          msys2 -c 'python -m pip install --upgrade setuptools'
-          msys2 -c 'python -m pip install --upgrade requests'
-          msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.1/pyinstaller-4.1.tar.gz'
-          msys2 -c 'tar xf PyInstaller-4.1.tar.gz --directory /d'
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade certifi
+          python -m pip install --upgrade setuptools
+          python -m pip install --upgrade requests
+          curl -O https://github.com/pyinstaller/pyinstaller/releases/download/v4.1/pyinstaller-4.1.tar.gz
+          tar xf PyInstaller-4.1.tar.gz --directory /d
           pushd /pyinstaller-4.1/bootloader
-          msys2 -c 'python ./waf all'
+          python ./waf all
           cd ..
-          msys2 -c 'python setup.py install'
+          python setup.py install
           popd
-          msys2 -c 'pyinstaller -w -F m64p-updater.py'
+          pyinstaller -w -F m64p-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

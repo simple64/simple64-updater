@@ -7,16 +7,20 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - name: Update and install packages
         run: |
-          pip3 install --upgrade pip
-          pip3 install --upgrade certifi
-          pip3 install --upgrade setuptools
-          pip3 install --upgrade requests
-          pip3 install --upgrade pyinstaller
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade certifi
+          python -m pip install --upgrade setuptools
+          python -m pip install --upgrade requests
+          python -m pip install --upgrade pyinstaller
       - name: Run build script
         run: |
-          python3 -m PyInstaller -F m64p-updater.py
+          python -m PyInstaller -F m64p-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

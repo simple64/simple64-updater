@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade requests
           curl -O -L https://github.com/pyinstaller/pyinstaller/releases/download/v4.1/pyinstaller-4.1.tar.gz
           tar xf PyInstaller-4.1.tar.gz --directory /d
-          pushd /pyinstaller-4.1/bootloader
+          pushd /d/pyinstaller-4.1/bootloader
           python ./waf all
           cd ..
           python setup.py install

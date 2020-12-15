@@ -35,9 +35,9 @@ jobs:
           msys2 -c 'python -m pip install --upgrade pip'
           msys2 -c 'python -m pip install --upgrade setuptools'
           msys2 -c 'python -m pip install --upgrade requests'
-          msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.0/PyInstaller-4.0.tar.gz'
-          msys2 -c 'tar xf PyInstaller-4.0.tar.gz --directory /d'
-          pushd /pyinstaller-4.0/bootloader
+          msys2 -c 'wget https://github.com/pyinstaller/pyinstaller/releases/download/v4.1/pyinstaller-4.1.tar.gz'
+          msys2 -c 'tar xf PyInstaller-4.1.tar.gz --directory /d'
+          pushd /pyinstaller-4.1/bootloader
           msys2 -c 'python ./waf all'
           cd ..
           msys2 -c 'python setup.py install'

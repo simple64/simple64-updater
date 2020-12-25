@@ -10,19 +10,6 @@ import zipfile
 import shutil
 import tkinter as tk
 
-if len(sys.argv) < 2:
-    print("no argument!")
-    sys.exit(1)
-
-my_env = os.environ.copy()
-
-root = tk.Tk()
-root.geometry("400x200")
-root.title("m64p-updater")
-var = tk.StringVar()
-var.set("Initializing")
-w = tk.Label(root, textvariable=var)
-w.pack(fill="none", expand=True)
 
 def update_m64p():
     var.set("Determining latest release")
@@ -60,9 +47,25 @@ def update_m64p():
 
     root.quit()
 
+
 def start_thread():
     x = threading.Thread(target=update_m64p)
     x.start()
+
+
+if len(sys.argv) < 2:
+    print("no argument!")
+    sys.exit(1)
+
+my_env = os.environ.copy()
+
+root = tk.Tk()
+root.geometry("400x200")
+root.title("m64p-updater")
+var = tk.StringVar()
+var.set("Initializing")
+w = tk.Label(root, textvariable=var)
+w.pack(fill="none", expand=True)
 
 root.after(3000, start_thread)
 root.mainloop()

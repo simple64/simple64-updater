@@ -28,7 +28,7 @@ def update_m64p():
     var.set("Determining latest release")
     resp = requests.get('https://api.github.com/repos/loganmc10/m64p/releases/latest')
     if resp.status_code != 200:
-        raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+        return
     for item in resp.json()['assets']:
         if sys.platform.startswith('win') and 'm64p-win64' in item['name']:
             m64p_url = item['browser_download_url']

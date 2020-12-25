@@ -13,7 +13,8 @@ import tkinter as tk
 
 def update_m64p():
     var.set("Determining latest release")
-    resp = requests.get('https://api.github.com/repos/loganmc10/m64p/releases/latest')
+    resp = requests.get(
+        'https://api.github.com/repos/loganmc10/m64p/releases/latest')
     if resp.status_code != 200:
         return
     for item in resp.json()['assets']:
@@ -33,15 +34,16 @@ def update_m64p():
         var.set("Extracting release")
         with zipfile.ZipFile(filename, 'r') as zf:
             for info in zf.infolist():
-                zf.extract( info.filename, path=tempdir )
-                out_path = os.path.join( tempdir, info.filename )
+                zf.extract(info.filename, path=tempdir)
+                out_path = os.path.join(tempdir, info.filename)
                 perm = (info.external_attr >> 16)
-                os.chmod( out_path, perm )
+                os.chmod(out_path, perm)
 
         extract_path = os.path.join(tempdir, 'mupen64plus')
         files = os.listdir(extract_path)
         for f in files:
-            shutil.move(os.path.join(extract_path, f), os.path.join(sys.argv[1], f))
+            shutil.move(os.path.join(extract_path, f),
+                        os.path.join(sys.argv[1], f))
 
     var.set("Cleaning up")
     root.quit()
@@ -69,4 +71,5 @@ w.pack(fill="none", expand=True)
 root.after(3000, start_thread)
 root.mainloop()
 
-subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')], env=my_env, start_new_session=True, close_fds=True)
+subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],
+                 env=my_env, start_new_session=True, close_fds=True)

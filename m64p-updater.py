@@ -54,7 +54,7 @@ def start_thread(x2):
     x2.start()
 
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) < 2:
         print("no argument!")
         sys.exit(1)
@@ -76,3 +76,7 @@ if __name__ == '__main__':
 
     subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],
                      env=my_env, start_new_session=True, close_fds=True)
+
+
+if __name__ == '__main__':
+    main()

@@ -11,7 +11,7 @@ import shutil
 import tkinter as tk
 
 
-def update_m64p(root2, var2):
+def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
     resp = requests.get(
         'https://api.github.com/repos/loganmc10/m64p/releases/latest')
@@ -50,11 +50,11 @@ def update_m64p(root2, var2):
     root2.quit()
 
 
-def start_thread(x2):
+def start_thread(x2: threading.Thread) -> None:
     x2.start()
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print("no argument!")
         sys.exit(1)

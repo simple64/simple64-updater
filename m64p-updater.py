@@ -40,7 +40,7 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
                 perm = (info.external_attr >> 16)
                 try:
                     os.chmod(out_path, perm)
-                except:
+                except OSError:
                     pass
 
         var2.set("Moving files into place")

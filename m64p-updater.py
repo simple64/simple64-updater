@@ -38,13 +38,17 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
                 zf.extract(info.filename, path=tempdir)
                 out_path = os.path.join(tempdir, info.filename)
                 perm = (info.external_attr >> 16)
-                os.chmod(out_path, perm)
+                try:
+                    os.chmod(out_path, perm)
+                except:
+                    pass
 
+        var2.set("Moving files into place")
         extract_path = os.path.join(tempdir, 'mupen64plus')
         files = os.listdir(extract_path)
         for f in files:
-            shutil.move(os.path.join(extract_path, f),
-                        os.path.join(sys.argv[1], f))
+            shutil.copy2(os.path.join(extract_path, f),
+                         os.path.join(sys.argv[1], f))
 
     var2.set("Cleaning up")
     root2.quit()

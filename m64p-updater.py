@@ -45,10 +45,7 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
 
         var2.set("Moving files into place")
         extract_path = os.path.join(tempdir, 'mupen64plus')
-        files = os.listdir(extract_path)
-        for f in files:
-            shutil.copy2(os.path.join(extract_path, f),
-                         os.path.join(sys.argv[1], f))
+        shutil.copytree(extract_path, sys.argv[1])
 
     var2.set("Cleaning up")
     root2.quit()

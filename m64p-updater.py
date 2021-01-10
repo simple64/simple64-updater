@@ -26,6 +26,9 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
 
     var2.set("Downloading latest release")
     resp = requests.get(m64p_url, allow_redirects=True)
+    if resp.status_code != 200:
+        root2.quit()
+        return
 
     with tempfile.TemporaryDirectory() as tempdir:
         filename = os.path.join(tempdir, 'm64p.zip')

@@ -79,7 +79,7 @@ def main() -> None:
     x.join()
 
     subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],
-                     env=my_env, start_new_session=True, close_fds=True)
+                     env=my_env, start_new_session=True, close_fds=True)  # nosec
 
 
 if __name__ == '__main__':

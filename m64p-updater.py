@@ -78,7 +78,7 @@ def main() -> None:
     root.mainloop()
     x.join()
 
-    subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],  # nosec
+    subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],
                      env=my_env, start_new_session=True, close_fds=True)
 
 

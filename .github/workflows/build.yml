@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -14,7 +14,7 @@ jobs:
       - name: Update and install packages
         run: |
           python -m pip install --upgrade pip 
-          python -m pip install --upgrade certifi setuptools requests flake8 mypy bandit pyinstaller==4.3
+          python -m pip install --upgrade certifi setuptools requests flake8 mypy bandit pyinstaller==4.4
       - name: Run build script
         run: |
           flake8 --extend-ignore=E501 m64p-updater.py
@@ -42,9 +42,9 @@ jobs:
           flake8 --extend-ignore=E501 m64p-updater.py
           mypy --strict m64p-updater.py
           bandit --skip B404,B603 m64p-updater.py
-          curl -O -L https://github.com/pyinstaller/pyinstaller/releases/download/v4.3/pyinstaller-4.3.tar.gz
-          tar xf PyInstaller-4.3.tar.gz --directory /d
-          pushd /d/pyinstaller-4.3/bootloader
+          curl -O -L https://github.com/pyinstaller/pyinstaller/releases/download/v4.4/pyinstaller-4.4.tar.gz
+          tar xf PyInstaller-4.4.tar.gz --directory /d
+          pushd /d/pyinstaller-4.4/bootloader
           python ./waf all
           cd ..
           python setup.py install

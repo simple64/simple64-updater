@@ -43,7 +43,7 @@ jobs:
           mypy --strict m64p-updater.py
           bandit --skip B404,B603 m64p-updater.py
           curl -O -L https://github.com/pyinstaller/pyinstaller/archive/refs/tags/v4.4.tar.gz
-          tar xf PyInstaller-4.4.tar.gz --directory /d
+          tar xf v4.4.tar.gz --directory /d
           pushd /d/pyinstaller-4.4/bootloader
           python ./waf all
           cd ..

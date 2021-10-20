@@ -13,16 +13,15 @@ import tkinter as tk
 
 def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
-    resp = requests.get(
-        'https://api.github.com/repos/loganmc10/m64p/releases/latest')
+    resp = requests.get("https://api.github.com/repos/loganmc10/m64p/releases/latest")
     if resp.status_code != 200:
         root2.quit()
         return
-    for item in resp.json()['assets']:
-        if sys.platform.startswith('win') and 'm64p-win64' in item['name']:
-            m64p_url = item['browser_download_url']
-        elif sys.platform.startswith('lin') and 'm64p-linux64' in item['name']:
-            m64p_url = item['browser_download_url']
+    for item in resp.json()["assets"]:
+        if sys.platform.startswith("win") and "m64p-win64" in item["name"]:
+            m64p_url = item["browser_download_url"]
+        elif sys.platform.startswith("lin") and "m64p-linux64" in item["name"]:
+            m64p_url = item["browser_download_url"]
 
     var2.set("Downloading latest release")
     resp = requests.get(m64p_url, allow_redirects=True)
@@ -31,23 +30,23 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
         return
 
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, 'm64p.zip')
-        with open(filename, 'wb') as localfile:
+        filename = os.path.join(tempdir, "m64p.zip")
+        with open(filename, "wb") as localfile:
             localfile.write(resp.content)
 
         var2.set("Extracting release")
-        with zipfile.ZipFile(filename, 'r') as zf:
+        with zipfile.ZipFile(filename, "r") as zf:
             for info in zf.infolist():
                 zf.extract(info.filename, path=tempdir)
                 out_path = os.path.join(tempdir, info.filename)
-                perm = (info.external_attr >> 16)
+                perm = info.external_attr >> 16
                 try:
                     os.chmod(out_path, perm)
                 except OSError:
                     pass
 
         var2.set("Moving files into place")
-        extract_path = os.path.join(tempdir, 'mupen64plus')
+        extract_path = os.path.join(tempdir, "mupen64plus")
         shutil.copytree(extract_path, sys.argv[1], dirs_exist_ok=True)
 
     var2.set("Cleaning up")
@@ -78,9 +77,13 @@ def main() -> None:
     root.mainloop()
     x.join()
 
-    subprocess.Popen([os.path.join(sys.argv[1], 'mupen64plus-gui')],
-                     env=my_env, start_new_session=True, close_fds=True)
+    subprocess.Popen(
+        [os.path.join(sys.argv[1], "mupen64plus-gui")],
+        env=my_env,
+        start_new_session=True,
+        close_fds=True,
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

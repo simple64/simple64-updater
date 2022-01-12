@@ -3,7 +3,7 @@ name: Build project
 on: [push, pull_request]
 
 env:
-  PYINSTALLER_VERSION: "4.7"
+  PYINSTALLER_VERSION: "4.8"
   PYTHON_VERSION: "3.9"
 
 jobs:

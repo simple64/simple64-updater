@@ -13,7 +13,7 @@ import tkinter as tk
 
 def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
-    resp = requests.get("https://api.github.com/repos/loganmc10/m64p/releases/latest")
+    resp = requests.get("https://api.github.com/repos/m64p/m64p/releases/latest")
     if resp.status_code != 200:
         root2.quit()
         return

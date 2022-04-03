@@ -15,7 +15,7 @@ jobs:
       - name: Update and install packages
         run: |
           dnf -y update
-          dnf -y install python39-pip binutils
+          dnf -y install python39-pip python39-tkinter binutils
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade certifi requests types-requests black flake8 mypy bandit wheel pyinstaller==${{ env.PYINSTALLER_VERSION }}
       - name: Run build script
@@ -24,7 +24,7 @@ jobs:
           flake8 --extend-ignore=E501 m64p-updater.py
           mypy --strict m64p-updater.py
           bandit --skip B404,B603 m64p-updater.py
-          python3 -m PyInstaller -F m64p-updater.py --hidden-import=tkinter
+          python3 -m PyInstaller -F m64p-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

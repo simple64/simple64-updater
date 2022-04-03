@@ -15,7 +15,7 @@ jobs:
       - name: Update and install packages
         run: |
           dnf -y update
-          dnf -y install python39-pip
+          dnf -y install python39-pip binutils
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade certifi setuptools requests types-requests black flake8 mypy bandit wheel pyinstaller==${{ env.PYINSTALLER_VERSION }}
       - name: Run build script

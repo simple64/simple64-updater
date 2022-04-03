@@ -24,7 +24,7 @@ jobs:
           flake8 --extend-ignore=E501 m64p-updater.py
           mypy --strict m64p-updater.py
           bandit --skip B404,B603 m64p-updater.py
-          python3 -m PyInstaller -F m64p-updater.py
+          python3 -m PyInstaller -F m64p-updater.py --hidden-import=tkinter
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

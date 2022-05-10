@@ -9,7 +9,7 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-20.04
-    container: quay.io/centos/centos:stream8
+    container: registry.access.redhat.com/ubi8/ubi:latest
     steps:
       - uses: actions/checkout@v2
       - name: Update and install packages

@@ -25,7 +25,7 @@ jobs:
           bandit --skip B404,B603 m64p-updater.py
           python3 -m PyInstaller -F m64p-updater.py
       - name: Upload package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: m64p-updater
           path: dist/m64p-updater
@@ -55,7 +55,7 @@ jobs:
           popd
           pyinstaller -w -F m64p-updater.py
       - name: Upload package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: m64p-updater.exe
           path: dist/m64p-updater.exe

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     container: registry.access.redhat.com/ubi8/ubi:latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Update and install packages
         run: |
           dnf -y install python39-pip python39-tkinter binutils
@@ -32,7 +32,7 @@ jobs:
   build-windows:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

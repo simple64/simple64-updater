@@ -8,17 +8,17 @@ on:
 
 env:
   PYINSTALLER_VERSION: "5.2"
-  PYTHON_VERSION: "3.9"
+  PYTHON_VERSION: "3.10"
 
 jobs:
   build-linux:
     runs-on: ubuntu-20.04
-    container: registry.access.redhat.com/ubi8/ubi:latest
+    container: registry.access.redhat.com/ubi9/ubi:latest
     steps:
       - uses: actions/checkout@v3
       - name: Update and install packages
         run: |
-          dnf -y install python39-pip python39-tkinter binutils
+          dnf -y install python310-pip python310-tkinter binutils
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade certifi requests types-requests black flake8 mypy bandit wheel pyinstaller==${{ env.PYINSTALLER_VERSION }}
       - name: Run build script

@@ -28,7 +28,7 @@ jobs:
           flake8 --extend-ignore=E501 simple64-updater.py
           mypy --strict simple64-updater.py
           bandit --skip B404,B603 simple64-updater.py
-          python3 -m PyInstaller -F m6simple644p-updater.py
+          python3 -m PyInstaller -F simple64-updater.py
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:

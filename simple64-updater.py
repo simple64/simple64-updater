@@ -11,26 +11,26 @@ import shutil
 import tkinter as tk
 
 
-def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
+def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
-    resp = requests.get("https://api.github.com/repos/m64p/m64p/releases/latest")
+    resp = requests.get("https://api.github.com/repos/simple64/simple64/releases/latest")
     if resp.status_code != 200:
         root2.quit()
         return
     for item in resp.json()["assets"]:
-        if sys.platform.startswith("win") and "m64p-win64" in item["name"]:
-            m64p_url = item["browser_download_url"]
-        elif sys.platform.startswith("lin") and "m64p-linux64" in item["name"]:
-            m64p_url = item["browser_download_url"]
+        if sys.platform.startswith("win") and "simple64-win64" in item["name"]:
+            simple64_url = item["browser_download_url"]
+        elif sys.platform.startswith("lin") and "simple64-linux64" in item["name"]:
+            simple64_url = item["browser_download_url"]
 
     var2.set("Downloading latest release")
-    resp = requests.get(m64p_url, allow_redirects=True)
+    resp = requests.get(simple64_url, allow_redirects=True)
     if resp.status_code != 200:
         root2.quit()
         return
 
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, "m64p.zip")
+        filename = os.path.join(tempdir, "simple64.zip")
         with open(filename, "wb") as localfile:
             localfile.write(resp.content)
 
@@ -46,7 +46,7 @@ def update_m64p(root2: tk.Tk, var2: tk.StringVar) -> None:
                     pass
 
         var2.set("Moving files into place")
-        extract_path = os.path.join(tempdir, "mupen64plus")
+        extract_path = os.path.join(tempdir, "simple64")
         shutil.copytree(extract_path, sys.argv[1], dirs_exist_ok=True)
 
     var2.set("Cleaning up")
@@ -66,19 +66,19 @@ def main() -> None:
 
     root = tk.Tk()
     root.geometry("400x200")
-    root.title("m64p-updater")
+    root.title("simple64-updater")
     var = tk.StringVar()
     var.set("Initializing")
     w = tk.Label(root, textvariable=var)
     w.pack(fill="none", expand=True)
 
-    x = threading.Thread(target=update_m64p, args=(root, var))
+    x = threading.Thread(target=update_simple64, args=(root, var))
     root.after(3000, start_thread, x)
     root.mainloop()
     x.join()
 
     subprocess.Popen(
-        [os.path.join(sys.argv[1], "mupen64plus-gui")],
+        [os.path.join(sys.argv[1], "simple64-gui")],
         env=my_env,
         start_new_session=True,
         close_fds=True,

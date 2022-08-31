@@ -13,7 +13,9 @@ import tkinter as tk
 
 def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
-    resp = requests.get("https://api.github.com/repos/simple64/simple64/releases/latest")
+    resp = requests.get(
+        "https://api.github.com/repos/simple64/simple64/releases/latest"
+    )
     if resp.status_code != 200:
         root2.quit()
         return

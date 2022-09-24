@@ -12,7 +12,7 @@ env:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container: registry.access.redhat.com/ubi9/ubi:latest
     steps:
       - uses: actions/checkout@v3

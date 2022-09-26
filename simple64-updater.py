@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import threading
-import subprocess
+import subprocess  # nosec
 import requests
 import tempfile
 import sys
@@ -9,6 +9,9 @@ import os
 import zipfile
 import shutil
 import tkinter as tk
+
+
+INI_NAME = "simple64-gui.ini"
 
 
 def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
@@ -19,11 +22,16 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
     if resp.status_code != 200:
         root2.quit()
         return
+    simple64_url = ""
     for item in resp.json()["assets"]:
         if sys.platform.startswith("win") and "simple64-win64" in item["name"]:
             simple64_url = item["browser_download_url"]
         elif sys.platform.startswith("lin") and "simple64-linux64" in item["name"]:
             simple64_url = item["browser_download_url"]
+
+    if not simple64_url:  # quit early if URL couldn't be determined
+        root2.quit()
+        return
 
     var2.set("Downloading latest release")
     resp = requests.get(simple64_url, allow_redirects=True)
@@ -32,9 +40,18 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
         return
 
     with tempfile.TemporaryDirectory() as tempdir:
+        try:
+            shutil.copyfile(  # copy INI file to temp dir before deleting the original directory
+                os.path.join(sys.argv[1], INI_NAME),
+                os.path.join(tempdir, INI_NAME),
+            )
+        except OSError:
+            pass
+        shutil.rmtree(sys.argv[1], ignore_errors=True)  # delete current folder
+
         filename = os.path.join(tempdir, "simple64.zip")
         with open(filename, "wb") as localfile:
-            localfile.write(resp.content)
+            localfile.write(resp.content)  # write zip into temp dir
 
         var2.set("Extracting release")
         with zipfile.ZipFile(filename, "r") as zf:
@@ -50,6 +67,13 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
         var2.set("Moving files into place")
         extract_path = os.path.join(tempdir, "simple64")
         shutil.copytree(extract_path, sys.argv[1], dirs_exist_ok=True)
+        try:
+            shutil.copyfile(  # copy INI file from temp dir to new directory
+                os.path.join(tempdir, INI_NAME),
+                os.path.join(sys.argv[1], INI_NAME),
+            )
+        except OSError:
+            pass
 
     var2.set("Cleaning up")
     root2.quit()
@@ -79,7 +103,7 @@ def main() -> None:
     root.mainloop()
     x.join()
 
-    subprocess.Popen(
+    subprocess.Popen(  # nosec
         [os.path.join(sys.argv[1], "simple64-gui")],
         env=my_env,
         start_new_session=True,

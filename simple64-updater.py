@@ -18,19 +18,13 @@ def clean_dir(install_path: str) -> None:
     except OSError:
         return
     for entry in scan:
-        if entry.is_file():
-            if (
-                entry.path.endswith("ini")
-                or entry.path.endswith("cfg")
-                or "save" in entry.path
-                or "screenshot" in entry.path
-            ):
-                continue
-            else:
-                try:
-                    os.remove(entry.path)
-                except OSError:
-                    pass
+        if entry.is_file() and (
+            entry.path.endswith(".dll") or entry.path.endswith(".exe")
+        ):
+            try:
+                os.remove(entry.path)
+            except OSError:
+                pass
     for entry in os.scandir(install_path):
         if entry.is_dir():
             try:

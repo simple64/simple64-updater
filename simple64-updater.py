@@ -11,7 +11,32 @@ import shutil
 import tkinter as tk
 
 
-INI_NAME = "simple64-gui.ini"
+def clean_dir(install_path: str) -> None:
+    # loop through the directory twice, one to clean up files, then again to remove empty dirs
+    try:
+        scan = os.scandir(install_path)
+    except OSError:
+        return
+    for entry in scan:
+        if entry.is_file():
+            if (
+                entry.path.endswith("ini")
+                or entry.path.endswith("cfg")
+                or "save" in entry.path
+                or "screenshot" in entry.path
+            ):
+                continue
+            else:
+                try:
+                    os.remove(entry.path)
+                except OSError:
+                    pass
+    for entry in os.scandir(install_path):
+        if entry.is_dir():
+            try:
+                os.rmdir(entry.path)  # This will fail if the directory is not empty
+            except OSError:
+                pass
 
 
 def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
@@ -39,16 +64,9 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
         root2.quit()
         return
 
-    with tempfile.TemporaryDirectory() as tempdir:
-        try:
-            shutil.copyfile(  # copy INI file to temp dir before deleting the original directory
-                os.path.join(sys.argv[1], INI_NAME),
-                os.path.join(tempdir, INI_NAME),
-            )
-        except OSError:
-            pass
-        shutil.rmtree(sys.argv[1], ignore_errors=True)  # delete current folder
+    clean_dir(sys.argv[1])  # clean up current directory
 
+    with tempfile.TemporaryDirectory() as tempdir:
         filename = os.path.join(tempdir, "simple64.zip")
         with open(filename, "wb") as localfile:
             localfile.write(resp.content)  # write zip into temp dir
@@ -67,13 +85,6 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
         var2.set("Moving files into place")
         extract_path = os.path.join(tempdir, "simple64")
         shutil.copytree(extract_path, sys.argv[1], dirs_exist_ok=True)
-        try:
-            shutil.copyfile(  # copy INI file from temp dir to new directory
-                os.path.join(tempdir, INI_NAME),
-                os.path.join(sys.argv[1], INI_NAME),
-            )
-        except OSError:
-            pass
 
     var2.set("Cleaning up")
     root2.quit()

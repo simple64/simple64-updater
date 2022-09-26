@@ -13,22 +13,19 @@ import tkinter as tk
 
 def clean_dir(install_path: str) -> None:
     # loop through the directory twice, one to clean up files, then again to remove empty dirs
-    try:
-        scan = os.scandir(install_path)
-    except OSError:
-        return
-    for entry in scan:
-        if entry.is_file() and (
-            entry.path.endswith(".dll") or entry.path.endswith(".exe")
-        ):
+    for root, _, files in os.walk(install_path):
+        for name in files:
+            path = os.path.join(root, name)
+            if path.endswith(".dll") or path.endswith(".exe"):
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+
+    for root, dirs, _ in os.walk(install_path, topdown=False):  # remove empty dirs
+        for name in dirs:
             try:
-                os.remove(entry.path)
-            except OSError:
-                pass
-    for entry in os.scandir(install_path):
-        if entry.is_dir():
-            try:
-                os.rmdir(entry.path)  # This will fail if the directory is not empty
+                os.rmdir(os.path.join(root, name))
             except OSError:
                 pass
 

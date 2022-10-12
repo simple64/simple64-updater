@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     container: registry.access.redhat.com/ubi9/ubi:latest
     steps:
-      - uses: actions/checkout@v3
       - name: Update and install packages
         run: |
           dnf -y update
-          dnf -y install python3-pip python3-tkinter binutils
+          dnf -y install python3-pip python3-tkinter binutils git
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade certifi types-requests black flake8 mypy bandit wheel pyinstaller==${{ env.PYINSTALLER_VERSION }}
+      - uses: actions/checkout@v3
       - name: Run build script
         run: |
           black --check simple64-updater.py

@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  PYINSTALLER_VERSION: "5.6.2"
+  PYINSTALLER_VERSION: "5.7.0"
   PYTHON_VERSION: "3.10"
 
 jobs:

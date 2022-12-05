@@ -56,7 +56,7 @@ jobs:
           pushd /d/pyinstaller-${{ env.PYINSTALLER_VERSION }}/bootloader
           python ./waf all
           cd ..
-          python setup.py install
+          python -m pip install .
           popd
           pyinstaller -w -F simple64-updater.py
       - name: Upload package

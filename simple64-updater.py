@@ -42,8 +42,6 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
     for item in resp.json()["assets"]:
         if sys.platform.startswith("win") and "simple64-win64" in item["name"]:
             simple64_url = item["browser_download_url"]
-        elif sys.platform.startswith("lin") and "simple64-linux64" in item["name"]:
-            simple64_url = item["browser_download_url"]
 
     if not simple64_url:  # quit early if URL couldn't be determined
         root2.quit()

@@ -33,7 +33,7 @@ def clean_dir(install_path: str) -> None:
 def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
     var2.set("Determining latest release")
     resp = requests.get(
-        "https://api.github.com/repos/simple64/simple64/releases/latest"
+        "https://api.github.com/repos/simple64/simple64/releases/latest", timeout=30
     )
     if resp.status_code != 200:
         root2.quit()
@@ -48,7 +48,7 @@ def update_simple64(root2: tk.Tk, var2: tk.StringVar) -> None:
         return
 
     var2.set("Downloading latest release")
-    resp = requests.get(simple64_url, allow_redirects=True)
+    resp = requests.get(simple64_url, allow_redirects=True, timeout=30)
     if resp.status_code != 200:
         root2.quit()
         return

@@ -19,7 +19,7 @@ jobs:
         run: go install fyne.io/fyne/v2/cmd/fyne@latest
 
       - name: Build
-        run: fyne pacakge --release --os windows --appID io.github.simple64.updater
+        run: fyne package --release --os windows --appID io.github.simple64.updater
 
       - name: Upload package
         uses: actions/upload-artifact@v3

@@ -60,6 +60,10 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		return "", errors.New("error determining latest release")
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", errors.New("could not read HTTP response")
@@ -92,6 +96,11 @@ func downloadRelease(simple64_url string, label *widget.Label) ([]byte, int64, e
 		return nil, 0, errors.New("error downloading latest release")
 	}
 	defer zipResp.Body.Close()
+
+	if zipResp.StatusCode != 200 {
+		return nil, 0, errors.New("error downloading latest release")
+	}
+
 	zipBody, err := io.ReadAll(zipResp.Body)
 	if err != nil {
 		return nil, 0, errors.New("could not read HTTP response")

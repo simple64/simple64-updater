@@ -15,6 +15,9 @@ jobs:
         with:
           go-version-file: "go.mod"
 
+      - name: Install packages
+        run: sudo apt-get -y update && sudo apt-get -y install libgl1-mesa-dev xorg-dev
+
       - name: Build
         run: go build -v .
 

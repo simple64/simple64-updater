@@ -19,7 +19,7 @@ jobs:
         run: sudo apt-get -y update && sudo apt-get -y install libgl1-mesa-dev xorg-dev
 
       - name: Build
-        run: go build -v .
+        run: go build -v -ldflags="-s -w" .
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -38,7 +38,7 @@ jobs:
           go-version-file: "go.mod"
 
       - name: Build
-        run: go build -v .
+        run: go build -v -ldflags="-s -w" .
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3

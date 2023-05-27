@@ -4,9 +4,12 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,10 +21,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func printError(l *widget.Label, a fyne.App, s string) {
-	l.SetText(s)
+func printError(label *widget.Label, app fyne.App, s string) {
+	label.SetText(s)
 	time.Sleep(3 * time.Second)
-	a.Quit()
+	app.Quit()
 }
 
 func cleanDir(directory string) error {
@@ -48,28 +51,24 @@ func cleanDir(directory string) error {
 	return err
 }
 
-func updateSimple64(l *widget.Label, a fyne.App) {
-	time.Sleep(3 * time.Second) // Wait for simple64-gui to close
-	l.SetText("Determining latest release")
+func determineLatestRelease(label *widget.Label) (string, error) {
+	label.SetText("Determining latest release")
 
 	resp, err := http.Get("https://api.github.com/repos/simple64/simple64/releases/latest")
 	if err != nil {
-		printError(l, a, "Error determining latest release")
-		return
+		return "", errors.New("error determining latest release")
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		printError(l, a, "Could not read HTTP response")
-		return
+		return "", errors.New("could not read HTTP response")
 	}
 
 	var data map[string]interface{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		printError(l, a, "Error parsing JSON")
-		return
+		return "", errors.New("error parsing JSON")
 	}
 	simple64_url := ""
 	assets := data["assets"].([]interface{})
@@ -81,44 +80,48 @@ func updateSimple64(l *widget.Label, a fyne.App) {
 	}
 
 	if simple64_url == "" {
-		printError(l, a, "Could not determine download URL")
-		return
+		return simple64_url, errors.New("could not determine download URL")
 	}
+	return simple64_url, nil
+}
 
-	l.SetText("Downloading latest release")
+func downloadRelease(simple64_url string, label *widget.Label) ([]byte, int64, error) {
+	label.SetText("Downloading latest release")
 	zipResp, err := http.Get(simple64_url)
 	if err != nil {
-		printError(l, a, "Error downloading latest release")
-		return
+		return nil, 0, errors.New("error downloading latest release")
 	}
 	defer zipResp.Body.Close()
-
-	// Create the output directory if it doesn't exist
-	err = os.MkdirAll(os.Args[1], os.ModePerm)
-	if err != nil {
-		printError(l, a, "Could not create directory")
-		return
-	}
-
-	l.SetText("Cleaning existing directory")
-	err = cleanDir(os.Args[1])
-	if err != nil {
-		printError(l, a, "Could not clean existing directory")
-		return
-	}
-
-	l.SetText("Extracting ZIP archive")
 	zipBody, err := io.ReadAll(zipResp.Body)
 	if err != nil {
-		printError(l, a, "Could not read HTTP response")
-		return
+		return nil, 0, errors.New("could not read HTTP response")
+	}
+	return zipBody, zipResp.ContentLength, nil
+}
+
+func prepDirectory(label *widget.Label) error {
+	label.SetText("Cleaning existing directory")
+
+	// Create the output directory if it doesn't exist
+	err := os.MkdirAll(os.Args[1], os.ModePerm)
+	if err != nil {
+		return errors.New("could not create directory")
 	}
 
-	// Open the downloaded zip file
-	zipReader, err := zip.NewReader(bytes.NewReader(zipBody), zipResp.ContentLength)
+	err = cleanDir(os.Args[1])
 	if err != nil {
-		printError(l, a, "Could not open ZIP")
-		return
+		return errors.New("could not clean existing directory")
+	}
+	return nil
+}
+
+func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
+	label.SetText("Extracting ZIP archive")
+
+	// Open the downloaded zip file
+	zipReader, err := zip.NewReader(bytes.NewReader(zipBody), zipLength)
+	if err != nil {
+		return errors.New("could not open ZIP")
 	}
 
 	// Extract each file from the zip archive
@@ -126,57 +129,102 @@ func updateSimple64(l *widget.Label, a fyne.App) {
 		// Open the file from the archive
 		zipFile, err := file.Open()
 		if err != nil {
-			printError(l, a, "Could not open ZIP file")
-			return
+			return errors.New("could not open ZIP file")
 		}
 		defer zipFile.Close()
 
 		// Construct the output file path
-		outputPath := filepath.Join(os.Args[1], file.Name)
+		relPath, err := filepath.Rel("simple64", file.Name)
+		if err != nil {
+			return errors.New("could not determine file path")
+		}
+		outputPath := filepath.Join(os.Args[1], relPath)
 
-		if file.FileInfo().IsDir() {
-			// Create the directory in the output path
-			err = os.MkdirAll(outputPath, os.ModePerm)
-			if err != nil {
-				printError(l, a, "is this needed?")
-				return
-			}
-		} else {
+		if !file.FileInfo().IsDir() {
 			// Create the parent directory of the file
 			err = os.MkdirAll(filepath.Dir(outputPath), os.ModePerm)
 			if err != nil {
-				printError(l, a, "Could not create directory")
-				return
+				return errors.New("could not create directory")
 			}
 
 			// Create the output file
 			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 			if err != nil {
-				printError(l, a, "Could not create file")
-				return
+				return errors.New("could not create file")
 			}
 			defer outputFile.Close()
 
 			// Copy the contents from the zip file to the output file
 			_, err = io.Copy(outputFile, zipFile)
 			if err != nil {
-				printError(l, a, "Could not write file")
-				return
+				return errors.New("could not write file")
 			}
 		}
 	}
-	l.SetText("Done extracting ZIP archive")
+	return nil
+}
+
+func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
+	time.Sleep(3 * time.Second) // Wait for simple64-gui to close
+
+	simple64_url, err := determineLatestRelease(label)
+	if err != nil {
+		printError(label, app, err.Error())
+		c <- false
+		return
+	}
+
+	zipBody, zipLength, err := downloadRelease(simple64_url, label)
+	if err != nil {
+		printError(label, app, err.Error())
+		c <- false
+		return
+	}
+
+	err = prepDirectory(label)
+	if err != nil {
+		printError(label, app, err.Error())
+		c <- false
+		return
+	}
+
+	err = extractZip(label, zipBody, zipLength)
+	if err != nil {
+		printError(label, app, err.Error())
+		c <- false
+		return
+	}
+
+	label.SetText("Done extracting ZIP archive")
+	time.Sleep(1 * time.Second)
+	app.Quit()
+	c <- true
 }
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("simpl64-updater")
+	w := a.NewWindow("simple64-updater")
 	w.Resize(fyne.NewSize(400, 200))
 	label := widget.NewLabel("Initializing")
 	content := container.New(layout.NewCenterLayout(), label)
 
 	w.SetContent(content)
 
-	go updateSimple64(label, a)
+	c := make(chan bool)
+	go updateSimple64(label, a, c)
 	w.ShowAndRun()
+
+	success := <-c
+	if success {
+		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui"))
+		err := cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = cmd.Process.Release()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 }

@@ -142,14 +142,14 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 		}
 		defer zipFile.Close()
 
-		// Construct the output file path
-		relPath, err := filepath.Rel("simple64", file.Name)
-		if err != nil {
-			return errors.New("could not determine file path")
-		}
-		outputPath := filepath.Join(os.Args[1], relPath)
-
 		if !file.FileInfo().IsDir() {
+			// Construct the output file path
+			relPath, err := filepath.Rel("simple64", file.Name)
+			if err != nil {
+				return errors.New("could not determine file path")
+			}
+			outputPath := filepath.Join(os.Args[1], relPath)
+
 			// Create the parent directory of the file
 			err = os.MkdirAll(filepath.Dir(outputPath), os.ModePerm)
 			if err != nil {

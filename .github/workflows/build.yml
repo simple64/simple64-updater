@@ -15,10 +15,11 @@ jobs:
         with:
           go-version-file: "go.mod"
 
+      - name: Install fyne
+        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+
       - name: Build
-        run: |
-          go install fyne.io/fyne/v2/cmd/fyne@latest
-          fyne package -os windows
+        run: fyne package --os windows --release
 
       - name: Upload package
         uses: actions/upload-artifact@v3

@@ -7,25 +7,6 @@ on:
   pull_request:
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
-        with:
-          go-version-file: "go.mod"
-
-      - name: Install packages
-        run: sudo apt-get -y update && sudo apt-get -y install libgl1-mesa-dev xorg-dev
-
-      - name: Build
-        run: go build -v .
-
-      - name: Upload package
-        uses: actions/upload-artifact@v3
-        with:
-          name: simple64-updater
-          path: simple64-updater
   build-windows:
     runs-on: windows-2022
     steps:

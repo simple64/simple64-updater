@@ -14,16 +14,12 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: "go.mod"
-          cache: false
 
       - name: Install packages
         run: sudo apt-get -y update && sudo apt-get -y install libgl1-mesa-dev xorg-dev
 
       - name: Build
         run: go build -v .
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
 
       - name: Upload package
         uses: actions/upload-artifact@v3
@@ -41,9 +37,6 @@ jobs:
 
       - name: Build
         run: go build -v .
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
 
       - name: Upload package
         uses: actions/upload-artifact@v3

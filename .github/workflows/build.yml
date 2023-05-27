@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: "go.mod"
+          cache: false
 
       - name: Install packages
         run: sudo apt-get -y update && sudo apt-get -y install libgl1-mesa-dev xorg-dev
@@ -36,6 +37,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: "go.mod"
+          cache: false
 
       - name: Build
         run: go build -v .

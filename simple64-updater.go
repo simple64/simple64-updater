@@ -211,6 +211,9 @@ func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		log.Fatal("must specify target directory")
+	}
 	a := app.New()
 	w := a.NewWindow("simple64-updater")
 	w.Resize(fyne.NewSize(400, 200))

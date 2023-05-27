@@ -16,7 +16,9 @@ jobs:
           go-version-file: "go.mod"
 
       - name: Build
-        run: go build -v .
+        run: |
+          go install fyne.io/fyne/v2/cmd/fyne@latest
+          fyne package -os windows
 
       - name: Upload package
         uses: actions/upload-artifact@v3

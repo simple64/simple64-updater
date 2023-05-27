@@ -4,7 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -56,23 +56,23 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 
 	resp, err := http.Get("https://api.github.com/repos/simple64/simple64/releases/latest")
 	if err != nil {
-		return "", errors.New("error determining latest release")
+		return "", fmt.Errorf("error determining latest release: %s", err.Error())
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return "", errors.New("error determining latest release")
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("error determining latest release, http status %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", errors.New("could not read HTTP response")
+		return "", fmt.Errorf("could not read HTTP response: %s", err.Error())
 	}
 
 	var data map[string]interface{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		return "", errors.New("error parsing JSON")
+		return "", fmt.Errorf("error parsing JSON: %s", err.Error())
 	}
 	simple64_url := ""
 	assets := data["assets"].([]interface{})
@@ -84,7 +84,7 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 	}
 
 	if simple64_url == "" {
-		return simple64_url, errors.New("could not determine download URL")
+		return simple64_url, fmt.Errorf("could not determine download URL")
 	}
 	return simple64_url, nil
 }
@@ -93,17 +93,17 @@ func downloadRelease(simple64_url string, label *widget.Label) ([]byte, int64, e
 	label.SetText("Downloading latest release")
 	zipResp, err := http.Get(simple64_url)
 	if err != nil {
-		return nil, 0, errors.New("error downloading latest release")
+		return nil, 0, fmt.Errorf("error downloading latest release: %s", err.Error())
 	}
 	defer zipResp.Body.Close()
 
-	if zipResp.StatusCode != 200 {
-		return nil, 0, errors.New("error downloading latest release")
+	if zipResp.StatusCode != http.StatusOK {
+		return nil, 0, fmt.Errorf("error downloading latest release, http status: %d", zipResp.StatusCode)
 	}
 
 	zipBody, err := io.ReadAll(zipResp.Body)
 	if err != nil {
-		return nil, 0, errors.New("could not read HTTP response")
+		return nil, 0, fmt.Errorf("could not read HTTP response: %s", err.Error())
 	}
 	return zipBody, zipResp.ContentLength, nil
 }
@@ -114,12 +114,12 @@ func prepDirectory(label *widget.Label) error {
 	// Create the output directory if it doesn't exist
 	err := os.MkdirAll(os.Args[1], os.ModePerm)
 	if err != nil {
-		return errors.New("could not create directory")
+		return fmt.Errorf("could not create directory: %s", err.Error())
 	}
 
 	err = cleanDir(os.Args[1])
 	if err != nil {
-		return errors.New("could not clean existing directory")
+		return fmt.Errorf("could not clean existing directory: %s", err.Error())
 	}
 	return nil
 }
@@ -130,7 +130,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 	// Open the downloaded zip file
 	zipReader, err := zip.NewReader(bytes.NewReader(zipBody), zipLength)
 	if err != nil {
-		return errors.New("could not open ZIP")
+		return fmt.Errorf("could not open ZIP: %s", err.Error())
 	}
 
 	// Extract each file from the zip archive
@@ -138,7 +138,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 		// Open the file from the archive
 		zipFile, err := file.Open()
 		if err != nil {
-			return errors.New("could not open ZIP file")
+			return fmt.Errorf("could not open ZIP file: %s", err.Error())
 		}
 		defer zipFile.Close()
 
@@ -146,27 +146,27 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			// Construct the output file path
 			relPath, err := filepath.Rel("simple64", file.Name)
 			if err != nil {
-				return errors.New("could not determine file path")
+				return fmt.Errorf("could not determine file path: %s", err.Error())
 			}
 			outputPath := filepath.Join(os.Args[1], relPath)
 
 			// Create the parent directory of the file
 			err = os.MkdirAll(filepath.Dir(outputPath), os.ModePerm)
 			if err != nil {
-				return errors.New("could not create directory")
+				return fmt.Errorf("could not create directory: %s", err.Error())
 			}
 
 			// Create the output file
 			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 			if err != nil {
-				return errors.New("could not create file")
+				return fmt.Errorf("could not create file: %s", err.Error())
 			}
 			defer outputFile.Close()
 
 			// Copy the contents from the zip file to the output file
 			_, err = io.Copy(outputFile, zipFile)
 			if err != nil {
-				return errors.New("could not write file")
+				return fmt.Errorf("could not write file: %s", err.Error())
 			}
 		}
 	}

@@ -6,61 +6,42 @@ on:
       - main
   pull_request:
 
-env:
-  PYINSTALLER_VERSION: "5.11.0"
-  PYTHON_VERSION: "3.10"
-
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    container: registry.access.redhat.com/ubi9/ubi:latest
     steps:
-      - name: Update and install packages
-        run: |
-          dnf -y update
-          dnf -y install python3-pip python3-tkinter binutils git
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade certifi types-requests black flake8 mypy bandit wheel pyinstaller==${{ env.PYINSTALLER_VERSION }}
       - uses: actions/checkout@v3
-      - name: Run build script
-        run: |
-          black --check simple64-updater.py
-          flake8 --extend-ignore=E501 simple64-updater.py
-          mypy --strict simple64-updater.py
-          bandit --skip B404,B603 simple64-updater.py
-          python3 -m PyInstaller -F simple64-updater.py
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: "go.mod"
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+
+      - name: Build
+        run: go build -v .
+
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: simple64-updater
-          path: dist/simple64-updater
+          path: simple64-updater
   build-windows:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-go@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Run build script
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade certifi requests types-requests black flake8 mypy bandit wheel
-          black --check simple64-updater.py
-          flake8 --extend-ignore=E501 simple64-updater.py
-          mypy --strict simple64-updater.py
-          bandit --skip B404,B603 simple64-updater.py
-          curl -O -L https://github.com/pyinstaller/pyinstaller/archive/refs/tags/v${{ env.PYINSTALLER_VERSION }}.tar.gz
-          tar xf v${{ env.PYINSTALLER_VERSION }}.tar.gz --directory /d
-          pushd /d/pyinstaller-${{ env.PYINSTALLER_VERSION }}/bootloader
-          python ./waf all
-          cd ..
-          python -m pip install .
-          popd
-          pyinstaller -w -F simple64-updater.py
+          go-version-file: "go.mod"
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+
+      - name: Build
+        run: go build -v .
+
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: simple64-updater.exe
-          path: dist/simple64-updater.exe
+          path: simple64-updater.exe

@@ -39,8 +39,7 @@ func cleanDir(directory string) error {
 
 		// Check if the file has the desired extension
 		if strings.HasSuffix(info.Name(), ".exe") || strings.HasSuffix(info.Name(), ".dll") {
-			err = os.Remove(path)
-			if err != nil {
+			if err = os.Remove(path); err != nil {
 				return err
 			}
 		}
@@ -70,8 +69,7 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 	}
 
 	var data map[string]interface{}
-	err = json.Unmarshal(body, &data)
-	if err != nil {
+	if err = json.Unmarshal(body, &data); err != nil {
 		return "", fmt.Errorf("error parsing JSON: %s", err.Error())
 	}
 	simple64_url := ""
@@ -112,13 +110,11 @@ func prepDirectory(label *widget.Label) error {
 	label.SetText("Cleaning existing directory")
 
 	// Create the output directory if it doesn't exist
-	err := os.MkdirAll(os.Args[1], os.ModePerm)
-	if err != nil {
+	if err := os.MkdirAll(os.Args[1], os.ModePerm); err != nil {
 		return fmt.Errorf("could not create directory: %s", err.Error())
 	}
 
-	err = cleanDir(os.Args[1])
-	if err != nil {
+	if err := cleanDir(os.Args[1]); err != nil {
 		return fmt.Errorf("could not clean existing directory: %s", err.Error())
 	}
 	return nil
@@ -151,8 +147,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			outputPath := filepath.Join(os.Args[1], relPath)
 
 			// Create the parent directory of the file
-			err = os.MkdirAll(filepath.Dir(outputPath), os.ModePerm)
-			if err != nil {
+			if err = os.MkdirAll(filepath.Dir(outputPath), os.ModePerm); err != nil {
 				return fmt.Errorf("could not create directory: %s", err.Error())
 			}
 
@@ -164,8 +159,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			defer outputFile.Close()
 
 			// Copy the contents from the zip file to the output file
-			_, err = io.Copy(outputFile, zipFile)
-			if err != nil {
+			if _, err = io.Copy(outputFile, zipFile); err != nil {
 				return fmt.Errorf("could not write file: %s", err.Error())
 			}
 		}
@@ -190,15 +184,13 @@ func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
 		return
 	}
 
-	err = prepDirectory(label)
-	if err != nil {
+	if err = prepDirectory(label); err != nil {
 		printError(label, app, err.Error())
 		c <- false
 		return
 	}
 
-	err = extractZip(label, zipBody, zipLength)
-	if err != nil {
+	if err = extractZip(label, zipBody, zipLength); err != nil {
 		printError(label, app, err.Error())
 		c <- false
 		return
@@ -229,12 +221,10 @@ func main() {
 	success := <-c
 	if success {
 		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui"))
-		err := cmd.Start()
-		if err != nil {
+		if err := cmd.Start(); err != nil {
 			log.Fatal(err)
 		}
-		err = cmd.Process.Release()
-		if err != nil {
+		if err := cmd.Process.Release(); err != nil {
 			log.Fatal(err)
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -24,7 +25,7 @@ import (
 
 func printError(label *widget.Label, app fyne.App, s string) {
 	label.SetText(s)
-	time.Sleep(3 * time.Second)
+	time.Sleep(3 * time.Second) //nolint:gomnd
 	app.Quit()
 }
 
@@ -41,14 +42,16 @@ func cleanDir(directory string) error {
 		// Check if the file has the desired extension
 		if strings.HasSuffix(info.Name(), ".exe") || strings.HasSuffix(info.Name(), ".dll") {
 			if err = os.Remove(path); err != nil {
-				return err
+				return fmt.Errorf("could not remove file: %s", err.Error())
 			}
 		}
 
 		return nil
 	})
-
-	return err
+	if err != nil {
+		return fmt.Errorf("could not clean directory: %s", err.Error())
+	}
+	return nil
 }
 
 func determineLatestRelease(label *widget.Label) (string, error) {
@@ -75,11 +78,24 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 		return "", fmt.Errorf("error parsing JSON: %s", err.Error())
 	}
 	simple64Url := ""
-	assets := data["assets"].([]interface{})
+	assets, ok := data["assets"].([]interface{})
+	if !ok {
+		return "", fmt.Errorf("error reading assets")
+	}
 	for _, element := range assets {
-		subArray := element.(map[string]interface{})
-		if strings.Contains(subArray["name"].(string), "simple64-win64") {
-			simple64Url = subArray["browser_download_url"].(string)
+		subArray, ok := element.(map[string]interface{})
+		if !ok {
+			return "", fmt.Errorf("error reading assets")
+		}
+		name, ok := subArray["name"].(string)
+		if !ok {
+			return "", fmt.Errorf("error asset file name")
+		}
+		if strings.Contains(name, "simple64-win64") {
+			simple64Url, ok = subArray["browser_download_url"].(string)
+			if !ok {
+				return "", fmt.Errorf("error reading download url")
+			}
 		}
 	}
 
@@ -156,7 +172,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			}
 
 			// Create the output file
-			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode()) //nolint:nosnakecase
 			if err != nil {
 				return fmt.Errorf("could not create file: %s", err.Error())
 			}
@@ -164,9 +180,9 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 
 			// Copy the contents from the zip file to the output file
 			for {
-				_, err := io.CopyN(outputFile, zipFile, 1024)
+				_, err := io.CopyN(outputFile, zipFile, 1024) //nolint:gomnd
 				if err != nil {
-					if err == io.EOF {
+					if errors.Is(err, io.EOF) {
 						break
 					}
 					return fmt.Errorf("could not copy file: %s", err.Error())
@@ -178,7 +194,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 }
 
 func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
-	time.Sleep(3 * time.Second) // Wait for simple64-gui to close
+	time.Sleep(3 * time.Second) //nolint:gomnd // Wait for simple64-gui to close
 
 	simple64Url, err := determineLatestRelease(label)
 	if err != nil {
@@ -213,12 +229,12 @@ func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
 }
 
 func main() {
-	if len(os.Args) < 2 {
+	if len(os.Args) < 2 { //nolint:gomnd
 		log.Fatal("must specify target directory")
 	}
 	a := app.New()
 	w := a.NewWindow("simple64-updater")
-	w.Resize(fyne.NewSize(400, 200))
+	w.Resize(fyne.NewSize(400, 200)) //nolint:gomnd
 	label := widget.NewLabel("Initializing")
 	content := container.New(layout.NewCenterLayout(), label)
 
@@ -228,9 +244,8 @@ func main() {
 	go updateSimple64(label, a, c)
 	w.ShowAndRun()
 
-	success := <-c
-	if success {
-		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui")) //nolint:golint,gosec
+	if <-c {
+		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui")) //nolint:gosec
 		if err := cmd.Start(); err != nil {
 			log.Fatal(err)
 		}

@@ -230,7 +230,7 @@ func main() {
 
 	success := <-c
 	if success {
-		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui"))
+		cmd := exec.Command(filepath.Join(os.Args[1], "simple64-gui")) //nolint:golint,gosec
 		if err := cmd.Start(); err != nil {
 			log.Fatal(err)
 		}

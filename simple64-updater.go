@@ -19,6 +19,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 )
 
 func printError(label *widget.Label, app fyne.App, s string) {
@@ -52,8 +53,9 @@ func cleanDir(directory string) error {
 
 func determineLatestRelease(label *widget.Label) (string, error) {
 	label.SetText("Determining latest release")
-
-	resp, err := http.Get("https://api.github.com/repos/simple64/simple64/releases/latest")
+	httpClient := retryablehttp.NewClient()
+	httpClient.Logger = nil
+	resp, err := httpClient.Get("https://api.github.com/repos/simple64/simple64/releases/latest")
 	if err != nil {
 		return "", fmt.Errorf("error determining latest release: %s", err.Error())
 	}
@@ -89,7 +91,9 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 
 func downloadRelease(simple64_url string, label *widget.Label) ([]byte, int64, error) {
 	label.SetText("Downloading latest release")
-	zipResp, err := http.Get(simple64_url)
+	httpClient := retryablehttp.NewClient()
+	httpClient.Logger = nil
+	zipResp, err := httpClient.Get(simple64_url)
 	if err != nil {
 		return nil, 0, fmt.Errorf("error downloading latest release: %s", err.Error())
 	}

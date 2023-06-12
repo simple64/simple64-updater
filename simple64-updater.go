@@ -74,26 +74,26 @@ func determineLatestRelease(label *widget.Label) (string, error) {
 	if err = json.Unmarshal(body, &data); err != nil {
 		return "", fmt.Errorf("error parsing JSON: %s", err.Error())
 	}
-	simple64_url := ""
+	simple64Url := ""
 	assets := data["assets"].([]interface{})
 	for _, element := range assets {
 		subArray := element.(map[string]interface{})
 		if strings.Contains(subArray["name"].(string), "simple64-win64") {
-			simple64_url = subArray["browser_download_url"].(string)
+			simple64Url = subArray["browser_download_url"].(string)
 		}
 	}
 
-	if simple64_url == "" {
-		return simple64_url, fmt.Errorf("could not determine download URL")
+	if simple64Url == "" {
+		return simple64Url, fmt.Errorf("could not determine download URL")
 	}
-	return simple64_url, nil
+	return simple64Url, nil
 }
 
-func downloadRelease(simple64_url string, label *widget.Label) ([]byte, int64, error) {
+func downloadRelease(simple64Url string, label *widget.Label) ([]byte, int64, error) {
 	label.SetText("Downloading latest release")
 	httpClient := retryablehttp.NewClient()
 	httpClient.Logger = nil
-	zipResp, err := httpClient.Get(simple64_url)
+	zipResp, err := httpClient.Get(simple64Url)
 	if err != nil {
 		return nil, 0, fmt.Errorf("error downloading latest release: %s", err.Error())
 	}
@@ -163,8 +163,14 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			defer outputFile.Close()
 
 			// Copy the contents from the zip file to the output file
-			if _, err = io.Copy(outputFile, zipFile); err != nil {
-				return fmt.Errorf("could not write file: %s", err.Error())
+			for {
+				_, err := io.CopyN(outputFile, zipFile, 1024)
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+					return fmt.Errorf("could not copy file: %s", err.Error())
+				}
 			}
 		}
 	}
@@ -174,14 +180,14 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
 	time.Sleep(3 * time.Second) // Wait for simple64-gui to close
 
-	simple64_url, err := determineLatestRelease(label)
+	simple64Url, err := determineLatestRelease(label)
 	if err != nil {
 		printError(label, app, err.Error())
 		c <- false
 		return
 	}
 
-	zipBody, zipLength, err := downloadRelease(simple64_url, label)
+	zipBody, zipLength, err := downloadRelease(simple64Url, label)
 	if err != nil {
 		printError(label, app, err.Error())
 		c <- false

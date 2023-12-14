@@ -22,7 +22,7 @@ jobs:
         run: fyne package --release --os windows --appID io.github.simple64.updater
 
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: simple64-updater.exe
           path: simple64-updater.exe

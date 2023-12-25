@@ -3,7 +3,7 @@ module github.com/simple64/simple64-updater
 go 1.20
 
 require (
-	fyne.io/fyne/v2 v2.4.2
+	fyne.io/fyne/v2 v2.4.3
 	github.com/hashicorp/go-retryablehttp v0.7.5
 )
 

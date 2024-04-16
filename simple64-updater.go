@@ -172,7 +172,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 			}
 
 			// Create the output file
-			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode()) //nolint:nosnakecase
+			outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 			if err != nil {
 				return fmt.Errorf("could not create file: %s", err.Error())
 			}

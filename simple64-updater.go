@@ -194,7 +194,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 }
 
 func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
-	time.Sleep(3 * time.Second) //nolint:gomnd // Wait for simple64-gui to close
+	time.Sleep(3 * time.Second) //nolint:gomnd,mnd // Wait for simple64-gui to close
 
 	simple64Url, err := determineLatestRelease(label)
 	if err != nil {

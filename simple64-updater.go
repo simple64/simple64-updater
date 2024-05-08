@@ -25,7 +25,7 @@ import (
 
 func printError(label *widget.Label, app fyne.App, s string) {
 	label.SetText(s)
-	time.Sleep(3 * time.Second) //nolint:gomnd
+	time.Sleep(3 * time.Second) //nolint:gomnd,mnd
 	app.Quit()
 }
 
@@ -180,7 +180,7 @@ func extractZip(label *widget.Label, zipBody []byte, zipLength int64) error {
 
 			// Copy the contents from the zip file to the output file
 			for {
-				_, err := io.CopyN(outputFile, zipFile, 1024) //nolint:gomnd
+				_, err := io.CopyN(outputFile, zipFile, 1024) //nolint:gomnd,mnd
 				if err != nil {
 					if errors.Is(err, io.EOF) {
 						break
@@ -229,12 +229,12 @@ func updateSimple64(label *widget.Label, app fyne.App, c chan bool) {
 }
 
 func main() {
-	if len(os.Args) < 2 { //nolint:gomnd
+	if len(os.Args) < 2 { //nolint:gomnd,mnd
 		log.Fatal("must specify target directory")
 	}
 	a := app.New()
 	w := a.NewWindow("simple64-updater")
-	w.Resize(fyne.NewSize(400, 200)) //nolint:gomnd
+	w.Resize(fyne.NewSize(400, 200)) //nolint:gomnd,mnd
 	label := widget.NewLabel("Initializing")
 	content := container.New(layout.NewCenterLayout(), label)
 

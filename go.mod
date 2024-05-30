@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	fyne.io/fyne/v2 v2.4.5
-	github.com/hashicorp/go-retryablehttp v0.7.6
+	github.com/hashicorp/go-retryablehttp v0.7.7
 )
 
 require (

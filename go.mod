@@ -3,7 +3,7 @@ module github.com/simple64/simple64-updater
 go 1.23
 
 require (
-	fyne.io/fyne/v2 v2.5.1
+	fyne.io/fyne/v2 v2.5.2
 	github.com/hashicorp/go-retryablehttp v0.7.7
 )
 
@@ -18,8 +18,8 @@ require (
 	github.com/fyne-io/image v0.0.0-20221020213044-f609c6a24345 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a // indirect
-	github.com/go-text/render v0.1.1-0.20240418202334-dd62631dae9b // indirect
-	github.com/go-text/typesetting v0.1.0 // indirect
+	github.com/go-text/render v0.2.0 // indirect
+	github.com/go-text/typesetting v0.2.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
